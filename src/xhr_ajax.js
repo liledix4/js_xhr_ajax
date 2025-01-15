@@ -76,7 +76,7 @@ function xhrDefaults(xhrRequest) {
  *  ----
  *
  *  @author [liledix4 🎸](https://liledix4.github.io)
- *  @version 0.1
+ *  @version 0.1.1
  *  @license Apache-2.0
  */
 export function readTextFile(xhrRequest, callback) {
@@ -103,8 +103,11 @@ export function readTextFile(xhrRequest, callback) {
         console.error(failureMessage);
     }
     xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status == '200') {
-            callback(xhr.responseText);
+        if (xhr.readyState === 4) {
+            if (xhr.status == '200' && callback)
+                callback(xhr.responseText);
+            else
+                console.log('XHR status: %d', parseInt(xhr.status));
         }
     }
     xhr.send(null); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
