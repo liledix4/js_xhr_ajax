@@ -1,7 +1,5 @@
 import { mime } from '../js_mime_presets/mime_presets.js';
 
-const failureMessage = 'Please tell liledix4 that something is wrong with AJAX. Thank you!';
-
 /**
  *
  *
@@ -76,19 +74,22 @@ function xhrDefaults(xhrRequest) {
  *  ----
  *
  *  @author [liledix4 🎸](https://liledix4.github.io)
- *  @version 0.1.1
+ *  @version 0.3.0
  *  @license Apache-2.0
  */
-export function readTextFile(xhrRequest, callback) {
+export function readTextFile(xhrRequest, callback, send = null) {
     xhrRequest = xhrDefaults(xhrRequest);
     const xhr = new XMLHttpRequest(); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/XMLHttpRequest
 
-    xhr.overrideMimeType(xhrRequest.mime); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/overrideMimeType
     xhr.open( // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open
         xhrRequest.method,  // method
         xhrRequest.url,     // url
         xhrRequest.async    // async
     );
+    xhr.onerror = function() {
+        console.error(failureMessage);
+    }
+    xhr.setRequestHeader('Content-Type', xhrRequest.contentType);
     if (xhrRequest.headers) {
         xhrRequest.headers.forEach(header => {
             if (header !== undefined) {
@@ -99,16 +100,18 @@ export function readTextFile(xhrRequest, callback) {
             }
         });
     }
-    xhr.onerror = function() {
-        console.error(failureMessage);
-    }
     xhr.onreadystatechange = function() {
         if (xhr.readyState === 4) {
             if (xhr.status == '200' && callback)
                 callback(xhr.responseText);
             else
-                console.log('XHR status: %d', parseInt(xhr.status));
+                callback(
+                    {
+                        status: xhr.status,
+                        response: xhr.responseText,
+                    }
+                );
         }
     }
-    xhr.send(null); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
+    xhr.send(send); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
 }
