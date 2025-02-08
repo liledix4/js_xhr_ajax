@@ -6,22 +6,22 @@
  * @since 0.1
  */
 function xhrDefaults(xhrRequest) {
-    if (!xhrRequest.method) {
-        xhrRequest.method = 'GET';
-    }
-    if (!xhrRequest.mime) {
-        xhrRequest.mime = 'application/x-www-form-urlencoded';
-    }
-    if (!xhrRequest.async) {
-        xhrRequest.async = true;
-    }
-    if (!xhrRequest.contentCharset) {
-        xhrRequest.contentCharset = 'UTF-8';
-    }
-    if (!xhrRequest.contentType) {
-        xhrRequest.contentType = `${xhrRequest.mime}; charset=${xhrRequest.contentCharset}`;
-    }
-    return xhrRequest;
+  if (!xhrRequest.method) {
+    xhrRequest.method = 'GET';
+  }
+  if (!xhrRequest.mime) {
+    xhrRequest.mime = 'application/x-www-form-urlencoded';
+  }
+  if (!xhrRequest.async) {
+    xhrRequest.async = true;
+  }
+  if (!xhrRequest.contentCharset) {
+    xhrRequest.contentCharset = 'UTF-8';
+  }
+  if (!xhrRequest.contentType) {
+    xhrRequest.contentType = `${xhrRequest.mime}; charset=${xhrRequest.contentCharset}`;
+  }
+  return xhrRequest;
 }
 
 /**
@@ -76,40 +76,40 @@ function xhrDefaults(xhrRequest) {
  *  @license Apache-2.0
  */
 export function readTextFile(xhrRequest, callback, send = null) {
-    xhrRequest = xhrDefaults(xhrRequest);
-    const xhr = new XMLHttpRequest(); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/XMLHttpRequest
+  xhrRequest = xhrDefaults(xhrRequest);
+  const xhr = new XMLHttpRequest(); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/XMLHttpRequest
 
-    xhr.open( // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open
-        xhrRequest.method,  // method
-        xhrRequest.url,     // url
-        xhrRequest.async    // async
-    );
-    xhr.onerror = function() {
-        console.error(failureMessage);
+  xhr.open( // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/open
+    xhrRequest.method,  // method
+    xhrRequest.url,     // url
+    xhrRequest.async    // async
+  );
+  xhr.onerror = function() {
+    console.error(failureMessage);
+  }
+  xhr.setRequestHeader('Content-Type', xhrRequest.contentType);
+  if (xhrRequest.headers) {
+    xhrRequest.headers.forEach(header => {
+      if (header !== undefined) {
+        xhr.setRequestHeader(
+          header.name,
+          header.value
+        );
+      }
+    });
+  }
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      if (xhr.status == '200' && callback)
+        callback(xhr.responseText);
+      else
+        callback(
+          {
+            status: xhr.status,
+            response: xhr.responseText,
+          }
+        );
     }
-    xhr.setRequestHeader('Content-Type', xhrRequest.contentType);
-    if (xhrRequest.headers) {
-        xhrRequest.headers.forEach(header => {
-            if (header !== undefined) {
-                xhr.setRequestHeader(
-                    header.name,
-                    header.value
-                );
-            }
-        });
-    }
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4) {
-            if (xhr.status == '200' && callback)
-                callback(xhr.responseText);
-            else
-                callback(
-                    {
-                        status: xhr.status,
-                        response: xhr.responseText,
-                    }
-                );
-        }
-    }
-    xhr.send(send); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
+  }
+  xhr.send(send); // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/send
 }
